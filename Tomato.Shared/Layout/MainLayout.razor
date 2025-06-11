@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-<MudThemeProvider />
+<MudThemeProvider Theme="MyCustomTheme" @ref="_mudThemeProvider" />
 
 <MudLayout>
     <MudAppBar Color="Color.Primary" Fixed="false" Dense="true" Elevation="20">
@@ -17,6 +17,19 @@
 </MudLayout>
 @code {
     bool _drawerOpen = true;
+    private bool _isDarkMode = false;
+    void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+    private MudThemeProvider _mudThemeProvider;
+   
+    MudTheme MyCustomTheme => new MudTheme()
+    {
+        PaletteLight = new PaletteLight() { Primary = "#bc4b51ff", Secondary = "#8cb369ff", AppbarBackground = "#f4a259ff", Background = "#5b8e7dff" },
+        PaletteDark = new PaletteDark() { Primary = "#16C47F", Secondary = "#FF9D23", AppbarBackground = "#F4631E" },
+        LayoutProperties = new LayoutProperties() { DrawerWidthLeft = "260px", DrawerWidthRight = "300px" }
+    };
 
     void DrawerToggle()
     {
