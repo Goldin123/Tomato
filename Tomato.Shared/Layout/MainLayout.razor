@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+
 <MudThemeProvider Theme="MyCustomTheme" @ref="_mudThemeProvider" />
 <MudPopoverProvider />
 <MudDialogProvider />
@@ -11,10 +12,12 @@
         <MudIconButton Icon="@Icons.Material.Rounded.SupervisedUserCircle" Color="Color.Inherit" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        @*NavMenu*@
+        <NavMenu/>
     </MudDrawer>
     <MudMainContent>
-        @*Body*@
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            @Body
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 @code {
