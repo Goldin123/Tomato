@@ -1,0 +1,168 @@
+﻿@page "/"
+@layout LoginLayout
+
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<EditForm Model="@loginRequest" OnValidSubmit="Validate" class="w-100">
+    <div class="login-bg">
+        <MudContainer MaxWidth="MaxWidth.Small" Class="pa-0">
+            <div class="login-card">
+                <!-- Login Title (App Bar) -->
+                <div class="login-title-bar">
+                    <MudText Typo="Typo.h6" Color="Color.Secondary" Class="fw-bold text-center" Style="margin:0;">Login</MudText>
+                </div>
+                <MudGrid Spacing="0">
+                    <MudItem xs="12" Class="mb-2">
+                        <MudTextField @ref="txtUsername"
+                                      T="string"
+                                      @bind-Value="loginRequest.Username"
+                                      Label="EMAIL ADDRESS"
+                                      Variant="Variant.Text"
+                                      FullWidth="true"
+                                      Required="true"
+                                      RequiredError="Email is required"
+                                      InputType="InputType.Email"
+                                      Class="login-input"
+                                      AutoFocus="true"
+                                      OnKeyDown="HandleKeyDown" />
+                    </MudItem>
+                    <MudItem xs="12" Class="mb-3">
+                        <MudTextField @bind-Value="loginRequest.Password"
+                                      Label="PASSWORD"
+                                      Variant="Variant.Text"
+                                      InputType="@passwordInputType"
+                                      FullWidth="true"
+                                      Required="true"
+                                      RequiredError="Password is required"
+                                      Adornment="Adornment.End"
+                                      AdornmentIcon="@passwordIcon"
+                                      AdornmentColor="Color.Default"
+                                      OnAdornmentClick="TogglePasswordVisibility"
+                                      OnKeyDown="HandleKeyDown"
+                                      OnMouseDown="@ShowPasswordOnMouseDown"
+                                      OnMouseUp="@HidePasswordOnMouseUp"
+                                      OnTouchStart="@ShowPasswordOnMouseDown"
+                                      OnTouchEnd="@HidePasswordOnMouseUp"
+                                      Class="login-input" />
+                    </MudItem>
+                    <MudItem xs="12" Class="mb-2">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Disabled="@_processing"
+                                   Style="width:100%; height:44px; border-radius:24px; font-weight:700; font-size:1rem;"
+                                   ButtonType="ButtonType.Submit">
+                            @if (_processing)
+                            {
+                                <MudProgressCircular Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+                                <span class="ms-2">Processing...</span>
+                            }
+                            else
+                            {
+                                <span>LOGIN</span>
+                            }
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" Class="mb-2 d-flex justify-center">
+                        <MudText Link="true"
+                                 Color="Color.Primary"
+                                 Class="cursor-pointer"
+                                 Style="font-size:1rem; font-weight:500;"
+                                 OnClick="ForgotPassword">
+                            Forgot Your Password?
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" Class="my-1">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1" style="height:1px; background:#e3e3e3"></div>
+                            <MudText Class="px-2" Style="font-size:1rem; color:#aaa;">OR</MudText>
+                            <div class="flex-grow-1" style="height:1px; background:#e3e3e3"></div>
+                        </div>
+                    </MudItem>
+                    <MudItem xs="12" Class="mb-3">
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Secondary"
+                                   StartIcon="@Icons.Material.Filled.Face"
+                                   Style="width:100%; height:44px; border-radius:24px; font-weight:700; font-size:1rem; border:1.5px solid #e1e4eb; color:#bbb;"
+                                   Disabled>
+                            LOGIN WITH FACE ID
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex justify-center">
+                        <MudText Typo="Typo.body2" Style="color:#888;">
+                            New to Tomato?
+                            <MudText Link="true" Color="Color.Primary" Class="cursor-pointer fw-bold ps-1" @onclick="GoToRegister">
+                                Register
+                            </MudText>
+                        </MudText>
+                    </MudItem>
+                </MudGrid>
+            </div>
+        </MudContainer>
+    </div>
+</EditForm>
+
+
+@code {
+    private InputType passwordInputType = InputType.Password;
+    private string passwordIcon = Icons.Material.Filled.VisibilityOff;
+    private bool _processing = false;
+    private MudTextField<string> txtUsername;
+
+    private AuthenticateUserRequest loginRequest = new();
+
+
+    private void TogglePasswordVisibility()
+    {
+        if (passwordInputType == InputType.Password)
+        {
+            passwordInputType = InputType.Text;
+            passwordIcon = Icons.Material.Filled.Visibility;
+        }
+        else
+        {
+            passwordInputType = InputType.Password;
+            passwordIcon = Icons.Material.Filled.VisibilityOff;
+        }
+    }
+    private void ShowPasswordOnMouseDown(MouseEventArgs e)
+    {
+        passwordInputType = InputType.Text;
+        passwordIcon = Icons.Material.Filled.Visibility;
+    }
+    private void HidePasswordOnMouseUp(MouseEventArgs e)
+    {
+        passwordInputType = InputType.Password;
+        passwordIcon = Icons.Material.Filled.VisibilityOff;
+    }
+    private async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter" && !_processing)
+        {
+            await Validate();
+        }
+    }
+    private void ForgotPassword()
+    {
+        Snackbar.Add("Password reset is not implemented. Please contact support.", MudBlazor.Severity.Info);
+    }
+    private async Task Validate()
+    {
+        _processing = true;
+        await Task.Delay(1500); // simulate processing
+        _processing = false;
+        if (LoginModel.IsAdmin)
+        {
+            NavigationManager.NavigateTo("/home");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/CustomerHome");
+        }
+    }
+    private void GoToRegister()
+    {
+        NavigationManager.NavigateTo("/register");
+    }
+}
