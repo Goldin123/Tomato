@@ -1,0 +1,165 @@
+﻿@page "/inbox"
+@using MudBlazor
+
+<SharedPageSection Title="Inbox" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="py-4">
+        <MudTextField @bind-Value="Search"
+                      Label="Search messages..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Class="mb-4" />
+
+        <MudPaper Style="width:100%;max-width:500px;margin:auto;">
+            <MudList T="string">
+                <MudListSubheader>Inbox</MudListSubheader>
+                <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="Inbox" Expanded>
+                    <NestedList>
+                        @foreach (var message in FilteredInbox)
+                        {
+                            <MudListItem @onclick="() => OpenMessage(message.Subject)">
+                                <MudText Typo="Typo.subtitle2" Class="@(!message.IsRead ? "font-bold" : null)">
+                                    @message.Subject
+                                    @if (!message.IsRead)
+                                    {
+                                        <MudBadge Dot="true" Color="Color.Error" Class="ml-2" />
+                                    }
+                                </MudText>
+                                <MudText Typo="Typo.caption">@message.SenderName • @message.Received.ToString("g")</MudText>
+                            </MudListItem>
+                        }
+                        @if (!FilteredInbox.Any())
+                        {
+                            <MudListItem>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">No messages found.</MudText>
+                            </MudListItem>
+                        }
+                    </NestedList>
+                </MudListItem>
+
+                <MudListItem Icon="@Icons.Material.Filled.Send" Text="Sent mail" @bind-Expanded="_expanded">
+                    <NestedList>
+                        @foreach (var message in FilteredSent)
+                        {
+                            <MudListItem @onclick="() => OpenMessage(message.Subject)">
+                                <MudText Typo="Typo.subtitle2">@message.Subject</MudText>
+                                <MudText Typo="Typo.caption">@message.Received.ToString("g")</MudText>
+                            </MudListItem>
+                        }
+                        @if (!FilteredSent.Any())
+                        {
+                            <MudListItem>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">No sent mail.</MudText>
+                            </MudListItem>
+                        }
+                    </NestedList>
+                </MudListItem>
+
+                <MudListItem Icon="@Icons.Material.Filled.Drafts">
+                    Drafts
+                </MudListItem>
+
+                <MudDivider />
+
+                <MudListSubheader Class="mb-n3">
+                    <MudSwitch Color="Color.Primary" @bind-Value="_expanded">"Sent mail" Expansion</MudSwitch>
+                </MudListSubheader>
+            </MudList>
+        </MudPaper>
+
+        <MudDialog @bind-Open="_messageDialogOpen" MaxWidth="MaxWidth.Small">
+            @if (!string.IsNullOrWhiteSpace(_selectedSubject))
+            {
+                var selected = Messages.FirstOrDefault(m => m.Subject == _selectedSubject);
+                if (selected != null)
+                {
+                    <MudDialogTitle>@selected.Subject</MudDialogTitle>
+                    <MudDialogContent>
+                        <MudText Typo="Typo.subtitle2">
+                            From: @selected.SenderName<br />
+                            Date: @selected.Received.ToString("f")
+                        </MudText>
+                        <MudDivider Class="my-2" />
+                        <MudText Typo="Typo.body1">@selected.Body</MudText>
+                    </MudDialogContent>
+                    <MudDialogActions>
+                        <MudButton Color="Color.Primary" OnClick="() => _messageDialogOpen = false">Close</MudButton>
+                    </MudDialogActions>
+                }
+            }
+        </MudDialog>
+    </MudContainer>
+</SharedPageSection>
+
+@code {
+    bool _expanded;
+
+    public string Search { get; set; } = "";
+    private string _selectedSubject;
+    private bool _messageDialogOpen = false;
+
+    public class InboxMessage
+    {
+        public string SenderName { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
+        public DateTime Received { get; set; }
+        public bool IsRead { get; set; }
+        public bool IsSent { get; set; } // true for Sent, false for Inbox
+    }
+
+    List<InboxMessage> Messages = new()
+    {
+        new InboxMessage {
+            SenderName = "Support Team",
+            Subject = "Welcome to Tomato!",
+            Body = "We're glad to have you on board. Here are some tips to get started: ...",
+            Received = DateTime.Now.AddHours(-2),
+            IsRead = false,
+            IsSent = false
+        },
+        new InboxMessage {
+            SenderName = "Booking Alerts",
+            Subject = "Your booking was confirmed",
+            Body = "Hi Jabu, your booking to Cape Town for 21-25 June 2025 has been confirmed. We look forward to hosting you!",
+            Received = DateTime.Now.AddDays(-1),
+            IsRead = true,
+            IsSent = false
+        },
+        new InboxMessage {
+            SenderName = "You",
+            Subject = "Re: Meeting tomorrow",
+            Body = "Looking forward to our meeting.",
+            Received = DateTime.Now.AddDays(-3),
+            IsRead = true,
+            IsSent = true
+        }
+    };
+
+    IEnumerable<InboxMessage> FilteredInbox =>
+        string.IsNullOrWhiteSpace(Search)
+            ? Messages.Where(m => !m.IsSent)
+            : Messages.Where(m => !m.IsSent && (
+                (m.Subject?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (m.SenderName?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (m.Body?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+            ));
+
+    IEnumerable<InboxMessage> FilteredSent =>
+        string.IsNullOrWhiteSpace(Search)
+            ? Messages.Where(m => m.IsSent)
+            : Messages.Where(m => m.IsSent && (
+                (m.Subject?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (m.SenderName?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (m.Body?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+            ));
+
+    private void OpenMessage(string subject)
+    {
+        _selectedSubject = subject;
+        var msg = Messages.FirstOrDefault(m => m.Subject == subject);
+        if (msg != null)
+            msg.IsRead = true;
+        _messageDialogOpen = true;
+    }
+}

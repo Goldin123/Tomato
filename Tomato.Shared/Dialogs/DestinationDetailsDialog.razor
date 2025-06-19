@@ -1,0 +1,35 @@
+﻿@using MudBlazor
+
+<MudDialog>
+    <TitleContent>
+        @if (!string.IsNullOrWhiteSpace(ImageUrl))
+        {
+            <MudAvatar Size="Size.Large" Image="@ImageUrl" Class="mr-2" />
+        }
+        else if (!string.IsNullOrWhiteSpace(Icon))
+        {
+            <MudIcon Icon="@Icon" Size="Size.Large" Color="Color.Primary" Class="mr-2" />
+        }
+        @Name
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.body1">@Description</MudText>
+        <MudText Typo="Typo.caption" Color="Color.Info" Class="mt-2">
+            Region: @Region
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public string Name { get; set; }
+    [Parameter] public string Description { get; set; }
+    [Parameter] public string Region { get; set; }
+    [Parameter] public string ImageUrl { get; set; }
+    [Parameter] public string Icon { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+}

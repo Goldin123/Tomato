@@ -1,0 +1,125 @@
+﻿@page "/destination"
+@using MudBlazor
+@inject IDialogService DialogService
+
+<SharedPageSection Title="Destinations" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-4 transparent-bg">
+
+        <!-- Search/filter bar -->
+        <MudTextField @bind-Value="Search"
+                      Label="Search destinations..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      AdornmentColor="Color.Secondary"
+                      Class="mb-4" />
+
+        <!-- Destinations Grid -->
+        <MudGrid Gutter="16px">
+            @foreach (var destination in FilteredDestinations)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Elevation="0" Class="p-3 mb-2" Style="border-radius: 12px; background: transparent;">
+                        <MudStack Spacing="1">
+                            @if (!string.IsNullOrWhiteSpace(destination.ImageUrl))
+                            {
+                                <MudAvatar Size="Size.Large" Image="@destination.ImageUrl" Class="mb-2" />
+                            }
+                            else if (!string.IsNullOrWhiteSpace(destination.Icon))
+                            {
+                                <MudIcon Icon="@destination.Icon" Size="Size.Large" Color="Color.Primary" Class="mb-2" />
+                            }
+                            <MudText Typo="Typo.subtitle1" Class="font-bold">@destination.Name</MudText>
+                            <MudText Typo="Typo.body2">@destination.Description</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Info">@destination.Region</MudText>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="mt-2"
+                                       Style="width:fit-content;"
+                                       OnClick="@(() => OpenDialogAsync(destination))">
+                                View Details
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+        @if (!FilteredDestinations.Any())
+        {
+            <MudText Class="pa-6" Typo="Typo.body1" Color="Color.Secondary">
+                No destinations found matching your search.
+            </MudText>
+        }
+    </MudContainer>
+</SharedPageSection>
+
+@code {
+    public string Search { get; set; } = "";
+
+    public class Destinations
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Region { get; set; }
+        public string ImageUrl { get; set; }
+        public string Icon { get; set; }
+    }
+
+    List<Destinations> booking = new()
+    {
+        new Destinations {
+            Name = "Cape Town",
+            Description = "Famous for Table Mountain, beaches, wine, and vibrant city life.",
+            Region = "Western Cape",
+            ImageUrl = "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=facearea&w=100&q=80"
+        },
+        new Destinations {
+            Name = "Kruger National Park",
+            Description = "One of Africa’s largest game reserves with amazing wildlife safaris.",
+            Region = "Mpumalanga & Limpopo",
+            Icon = Icons.Material.Filled.Pets
+        },
+        new Destinations {
+            Name = "Durban",
+            Description = "Coastal city with warm beaches, Indian cuisine, and year-round sun.",
+            Region = "KwaZulu-Natal",
+            ImageUrl = "https://images.unsplash.com/photo-1465101178521-c1a9136a2a09?auto=format&fit=facearea&w=100&q=80"
+        },
+        new Destinations {
+            Name = "Drakensberg Mountains",
+            Description = "Scenic hikes, dramatic cliffs, waterfalls, and adventure sports.",
+            Region = "KwaZulu-Natal",
+            Icon = Icons.Material.Filled.Landscape
+        },
+        new Destinations {
+            Name = "Stellenbosch",
+            Description = "Historic town famous for vineyards, art, and Cape Dutch architecture.",
+            Region = "Western Cape",
+            ImageUrl = "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?auto=format&fit=facearea&w=100&q=80"
+        }
+    };
+
+    IEnumerable<Destinations> FilteredDestinations =>
+        string.IsNullOrWhiteSpace(Search)
+            ? booking
+            : booking.Where(d =>
+                (d.Name?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (d.Description?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (d.Region?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+            );
+
+    private void OpenDialogAsync(Destinations destination)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(DestinationDetailsDialog.Name), destination.Name },
+            { nameof(DestinationDetailsDialog.Description), destination.Description },
+            { nameof(DestinationDetailsDialog.Region), destination.Region },
+            { nameof(DestinationDetailsDialog.ImageUrl), destination.ImageUrl },
+            { nameof(DestinationDetailsDialog.Icon), destination.Icon }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small };
+        DialogService.Show<DestinationDetailsDialog>("Destination Details", parameters, options);
+    }
+}

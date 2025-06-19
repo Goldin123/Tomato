@@ -1,0 +1,70 @@
+﻿@page "/bookings/cancellations"
+@using MudBlazor
+
+<SharedPageSection Title="Booking Cancellations" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-4">
+        <MudTextField @bind-Value="Search"
+                      Label="Search cancellations..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Class="mb-4" />
+
+        <MudTable Items="FilteredCancellations" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Booking #</MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Destination</MudTh>
+                <MudTh>Reason</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Booking #">@context.BookingNumber</MudTd>
+                <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd DataLabel="Destination">@context.Destination</MudTd>
+                <MudTd DataLabel="Reason">@context.Reason</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip T="string" Color="@(context.Status == "Refunded" ? Color.Success : Color.Error)" Text="@context.Status" />
+                </MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" Title="View Details" />
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Class="pa-6" Typo="Typo.body1" Color="Color.Secondary">
+                    No cancellations found matching your search.
+                </MudText>
+            </NoRecordsContent>
+        </MudTable>
+    </MudContainer>
+</SharedPageSection>
+
+@code {
+    public string Search { get; set; } = "";
+
+    public class Cancellation
+    {
+        public string BookingNumber { get; set; }
+        public DateTime Date { get; set; }
+        public string Destination { get; set; }
+        public string Reason { get; set; }
+        public string Status { get; set; }
+    }
+
+    List<Cancellation> Cancellations = new()
+    {
+        new Cancellation { BookingNumber = "B004", Date = DateTime.Today.AddDays(-5), Destination = "Stellenbosch", Reason = "Family emergency", Status = "Refunded" },
+        new Cancellation { BookingNumber = "B002", Date = DateTime.Today.AddDays(-8), Destination = "Johannesburg", Reason = "Schedule conflict", Status = "Refund Requested" }
+    };
+
+    IEnumerable<Cancellation> FilteredCancellations =>
+        string.IsNullOrWhiteSpace(Search)
+            ? Cancellations
+            : Cancellations.Where(c =>
+                (c.BookingNumber?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (c.Destination?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (c.Reason?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (c.Status?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+            );
+}

@@ -41,11 +41,11 @@
 
     private List<BottomNavItem> BottomNavItems = new()
     {
-        new() { Route = "/CustomerHome",        Icon = Icons.Material.Filled.Search,           Label = "Search" },
-        new() { Route = "/customer/categories",  Icon = Icons.Material.Filled.Map,         Label = "Destinations" },
-        new() { Route = "/customer/bag",        Icon = Icons.Material.Filled.Airlines,   Label = "Bookings" },
-        new() { Route = "/customer/lists",       Icon = Icons.Material.Filled.Mail, Label = "Inbox" },
-        new() { Route = "/customer/account-settings",     Icon = Icons.Material.Filled.Person,         Label = "Account" }
+        new() { Route = "/Home",        Icon = Icons.Material.Filled.Search,           Label = "Search" },
+        new() { Route = "/destination",  Icon = Icons.Material.Filled.Map,         Label = "Destinations" },
+        new() { Route = "/bookings/mybookings",        Icon = Icons.Material.Filled.Airlines,   Label = "Bookings" },
+        new() { Route = "/inbox",       Icon = Icons.Material.Filled.Mail, Label = "Inbox" },
+        new() { Route = "/profile",     Icon = Icons.Material.Filled.Person,         Label = "Account" }
     };
 
     protected override void OnInitialized()

@@ -11,6 +11,7 @@ html, body {
     margin: 0;
     padding: 0;
     overflow: auto; /* Allow scrolling again */
+    overflow-x: hidden !important;
 }
 
 
@@ -322,4 +323,38 @@ a.nav-link:hover {
     white-space: nowrap;
 }
 
-/* Hotfix: styles moved from Razor pages */
+.drawer-zindex-fix {
+    z-index: 1301 !important;
+    position: relative !important;
+    background: inherit;
+}
+.mud-appbar {
+    z-index: 1300 !important;
+    /* Remove position: fixed and others */
+}
+
+.mud-drawer {
+    z-index: 1200 !important;
+}
+
+.main-content-scroll, .mud-main-content {
+    margin-top: 64px !important; /* Height of the AppBar */
+}
+.tourism-card {
+    border-radius: 12px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.date-secondary .mud-input-slot input {
+    color: var(--secondary-brand-color) !important;
+    font-weight: 600;
+}
+.transparent-bg,
+.transparent-bg .mud-container,
+.transparent-bg .mud-grid {
+    background: transparent !important;
+    box-shadow: none !important;
+}
