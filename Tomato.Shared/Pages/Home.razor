@@ -5,7 +5,7 @@
 <MudContainer MaxWidth="MaxWidth.False" Class="p-0">
 
     <!-- Date Range Section (ultra compact, transparent, secondary color) -->
-    <MudPaper Elevation="0" Class="mx-auto my-2 p-1 mx-3" Style="border-radius: 16px; background: transparent;">
+@*     <MudPaper Elevation="0" Class="mx-auto my-2 p-1 mx-3" Style="border-radius: 16px; background: transparent;">
         <MudStack AlignItems="AlignItems.Center" Spacing="1">
             <MudText Typo="Typo.h6" Class="mb-0" Color="Color.Secondary">
                 When are you travelling?
@@ -15,6 +15,19 @@
                                 PickerVariant="PickerVariant.Dialog"
                                 Margin="Margin.Dense"
                                 Label="Check-in and Check-out"  Class="date-secondary"/>
+        </MudStack>
+    </MudPaper> *@
+
+    <!-- Date Range Section -->
+    <MudPaper Elevation="5" Class="mx-auto my-5 p-4" Style="max-width: 540px; border-radius: 16px;">
+        <MudStack AlignItems="AlignItems.Center" Spacing="2">
+            <MudText Typo="Typo.h5" Class="mb-1">When are you travelling?</MudText>
+            <MudDateRangePicker @bind-DateRange="_dateRange"
+                                PickerVariant="PickerVariant.Dialog"
+                                Margin="Margin.Dense"
+                                StartText="Check-in"
+                                EndText="Check-out"
+                                Style="min-width:220px;" />
         </MudStack>
     </MudPaper>
 

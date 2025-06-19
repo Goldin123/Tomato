@@ -338,7 +338,7 @@ a.nav-link:hover {
 }
 
 .main-content-scroll, .mud-main-content {
-    margin-top: 64px !important; /* Height of the AppBar */
+    margin-top: 10px !important; /* Height of the AppBar */
 }
 .tourism-card {
     border-radius: 12px;
