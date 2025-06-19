@@ -1,23 +1,239 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudThemeProvider Theme="MyCustomTheme" @ref="_mudThemeProvider" @bind-IsDarkMode="_isDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<MudLayout Class="h-100 d-flex flex-column">
+    <!-- Top AppBar -->
+    <MudAppBar Elevation="10" Dense="true" Color="Color.Primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+        <MudText Typo="Typo.h6" Class="ms-2">@(_activePageTitle ?? "Tomato")</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@(_isDarkMode? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
+                       OnClick="@ToggleDarkMode"
+                       Color="Color.Inherit" />
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <!-- Avatar Menu Desktop -->
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudMenu OffsetY="true" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopRight">
+                <ActivatorContent>
+                    <span>
+                        <MudAvatar Size="Size.Medium" Color="Color.Secondary" Class="cursor-pointer">JB</MudAvatar>
+                    </span>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem OnClick="@Profile">
+                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Class="me-2" />
+                        Profile
+                    </MudMenuItem>
+                    <MudMenuItem Href="/admin/settings">
+                        <MudIcon Icon="@Icons.Material.Filled.Settings" Class="me-2" />
+                        Settings
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@SwitchAccount">
+                        <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Class="me-2" />
+                        Switch Account
+                    </MudMenuItem>
+                    <MudMenuItem Href="/support">
+                        <MudIcon Icon="@Icons.Material.Filled.SupportAgent" Class="me-2" />
+                        Support
+                    </MudMenuItem>
+                    <MudDivider />
+                    <MudMenuItem OnClick="@Logout">
+                        <MudIcon Icon="@Icons.Material.Filled.Logout" Class="me-2" />
+                        Logout
+                    </MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        </MudHidden>
+        
+        <!-- Avatar Menu Mobile -->
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudMenu OffsetY="true" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopRight">
+                <ActivatorContent>
+                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" />
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem OnClick="@Profile">
+                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Class="me-2" />
+                        Profile
+                    </MudMenuItem>
+                    <MudMenuItem Href="/admin/settings">
+                        <MudIcon Icon="@Icons.Material.Filled.Settings" Class="me-2" />
+                        Settings
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@SwitchAccount">
+                        <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Class="me-2" />
+                        Switch Account
+                    </MudMenuItem>
+                    <MudMenuItem Href="/support">
+                        <MudIcon Icon="@Icons.Material.Filled.SupportAgent" Class="me-2" />
+                        Support
+                    </MudMenuItem>
+                    <MudDivider />
+                    <MudMenuItem OnClick="@Logout">
+                        <MudIcon Icon="@Icons.Material.Filled.Logout" Class="me-2" />
+                        Logout
+                    </MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        </MudHidden>
+    </MudAppBar>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+    <!-- Responsive Drawer -->
+    <MudDrawer @bind-Open="_drawerOpen"
+               Anchor="Anchor.Left"
+               Variant="DrawerVariant.Responsive"
+               Elevation="1"
+               ClipMode="DrawerClipMode.Never"
+               Breakpoint="Breakpoint.Md">
+       <SideNavMenu/>
+    </MudDrawer>
+
+    <!-- Main Body with scroll -->
+    <MudMainContent Class="main-content-scroll">
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            <CascadingValue Value="(Action<string>)SetPageTitle">
+                @Body
+            </CascadingValue>
+        </MudContainer>
+    </MudMainContent>
+
+
+    <!-- Bottom Navigation -->
+    @if (LoginModel.IsAdmin)
+    {
+        <CustomerBottomMenu />
+    }else
+    {
+        <CustomerBottomMenu />
+    }
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = false;
+    private bool _isDarkMode = false;
+    private MudThemeProvider _mudThemeProvider;
+    private string _activePageTitle;
+    private string CurrentPageTitle;
+    [Inject] ISnackbar Snackbar { get; set; }
+    // Nav item definition
+    class BottomNavItem
+    {
+        public string Route { get; set; }
+        public string Icon { get; set; }
+        public string Label { get; set; }
+    }
+
+    // List of bottom nav items
+    List<BottomNavItem> BottomNavItems = new()
+    {
+        new() { Route = "/home", Icon = Icons.Material.Filled.Dashboard, Label = "Dashboard" },
+        new() { Route = "/admin/products", Icon = Icons.Material.Filled.Inventory2, Label = "Products" },
+        new() { Route = "/admin/orders", Icon = Icons.Material.Filled.ShoppingCart, Label = "Orders" },
+        new() { Route = "/admin/users", Icon = Icons.Material.Filled.People, Label = "Users" },
+        new() { Route = "/admin/settings", Icon = Icons.Material.Filled.Settings, Label = "Settings" },
+    };
+
+    string? ActiveTab;
+
+    protected override void OnInitialized()
+    {
+        SetActiveTab(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        SetActiveTab(e.Location);
+        StateHasChanged();
+    }
+
+    void SetActiveTab(string uri)
+    {
+        var relativePath = NavigationManager.ToBaseRelativePath(uri);
+        // Set based on the first match
+        ActiveTab = BottomNavItems.FirstOrDefault(i => relativePath.StartsWith(i.Route.TrimStart('/'), StringComparison.OrdinalIgnoreCase))?.Route ?? "/dashboard";
+    }
+
+    void NavigateTo(string route)
+    {
+        NavigationManager.NavigateTo(route);
+        ActiveTab = route;
+    }
+
+    void DrawerToggle() => _drawerOpen = !_drawerOpen;
+
+    void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+        Snackbar.Add($"Switched to {(_isDarkMode ? "Dark" : "Light")} Mode", MudBlazor.Severity.Info);
+    }
+
+    private void SetPageTitle(string title)
+    {
+        CurrentPageTitle = title;
+    }
+
+    private async Task HandleScroll()
+    {
+        var scrollY = await JS.InvokeAsync<double>("eval", "document.querySelector('.scroll-container').scrollTop");
+        var isHomePage = NavigationManager.Uri.EndsWith("/home");
+
+        if (scrollY > 60)
+        {
+            if (string.IsNullOrEmpty(_activePageTitle))
+            {
+                _activePageTitle = isHomePage ? "Pickle" : CurrentPageTitle;
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(_activePageTitle))
+            {
+                _activePageTitle = null;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void SwitchAccount()
+    {
+        // Optional: logic for switching accounts
+        // Open a dialog, or navigate somewhere
+    }
+
+    private void Logout()
+    {
+        //Preferences.Clear(); // or any logout cleanup
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+    private void Profile()
+    {
+        //Preferences.Clear(); // or any logout cleanup
+        NavigationManager.NavigateTo("/profile", forceLoad: true);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _drawerOpen = true;
+            StateHasChanged();
+        }
+    }
+
+    MudTheme MyCustomTheme => new MudTheme()
+    {
+        PaletteLight = new PaletteLight() { Primary = "#bc4b51ff", Secondary = "#8cb369ff", AppbarBackground = "#f4a259ff", Background = "#5b8e7dff" },
+        PaletteDark = new PaletteDark() { Primary = "#bc4b51ff", Secondary = "#8cb369ff", AppbarBackground = "#f4a259ff", Background = "#B1B0B5" },
+        LayoutProperties = new LayoutProperties() { DrawerWidthLeft = "260px", DrawerWidthRight = "300px" }
+    };
+}
+

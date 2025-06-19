@@ -1,0 +1,116 @@
+﻿@using MudBlazor
+@inject NavigationManager NavigationManager
+
+<MudNavMenu Class="py-0">
+    <MudText Typo="Typo.h6" Class="px-4 pt-4 pb-0">Tomato</MudText>
+    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary mb-2">Customer Services</MudText>
+    <MudDivider Class="my-2" />
+
+    @foreach (var item in MenuItems)
+    {
+        @RenderMenuItem(item)
+    }
+
+    <MudDivider Class="my-2" />
+
+    <MudNavLink Href="/customer/alerts" Icon="@Icons.Material.Filled.NotificationsActive">
+        Alerts
+        <MudBadge Dot="true" Color="Color.Error" Class="ml-2" />
+    </MudNavLink>
+
+    <MudNavLink Href="/customer/about" Icon="@Icons.Material.Filled.Info">
+        About
+    </MudNavLink>
+</MudNavMenu>
+
+<MudSpacer />
+
+<!-- Logout Button -->
+<MudPaper Elevation="0" Class="p-2">
+    <MudButton OnClick="@Logout" Variant="Variant.Outlined"
+               StartIcon="@Icons.Material.Filled.PowerSettingsNew"
+               Color="Color.Error" Class="w-100 font-weight-bold">
+        LOGOUT
+    </MudButton>
+</MudPaper>
+
+@code {
+    public class CustomerNavItem
+    {
+        public string Label { get; set; }
+        public string Route { get; set; }
+        public string Icon { get; set; }
+        public List<CustomerNavItem> Children { get; set; }
+    }
+
+    private List<CustomerNavItem> MenuItems = new()
+    {
+                new()
+        {
+            Label = "Explore",
+            Icon = Icons.Material.Filled.TravelExplore,
+            Children = new()
+            {
+                new() { Label = "Search", Route = "/home", Icon = Icons.Material.Filled.Home },
+                new() { Label = "Deals & Promotions", Route = "/deals", Icon = Icons.Material.Filled.LocalOffer },
+                new() { Label = "Destinations", Route = "/destination", Icon = Icons.Material.Filled.Place },
+                new() { Label = "Guides", Route = "/guides", Icon = Icons.Material.Filled.PersonSearch }
+            }
+        },
+        new()
+        {
+            Label = "Bookings",
+            Icon = Icons.Material.Filled.BookOnline,
+            Children = new()
+            {
+                new() { Label = "My Bookings", Route = "/bookings/mybookings", Icon = Icons.Material.Filled.Event },
+                new() { Label = "Cancellations", Route = "/bookings/cancellations", Icon = Icons.Material.Filled.NoLuggage },
+                new() { Label = "Refunds", Route = "/bookings/refunds", Icon = Icons.Material.Filled.MoneyOff },
+            }
+        },
+        new()
+        {
+            Label = "More",
+            Icon = Icons.Material.Filled.Menu,
+            Children = new()
+            {
+                new() { Label = "Profile", Route = "/profile", Icon = Icons.Material.Filled.AccountCircle },
+                new() { Label = "Support", Route = "/support", Icon = Icons.Material.Filled.Support }
+            }
+        }
+    };
+
+    RenderFragment RenderMenuItem(CustomerNavItem item) => builder =>
+    {
+        if (item.Children != null && item.Children.Any())
+        {
+            builder.OpenComponent<MudNavGroup>(0);
+            builder.AddAttribute(1, "Title", item.Label);
+            builder.AddAttribute(2, "Icon", item.Icon);
+            builder.AddAttribute(3, "ChildContent", (RenderFragment)(childBuilder =>
+            {
+                foreach (var child in item.Children)
+                {
+                    childBuilder.AddContent(4, RenderMenuItem(child));
+                }
+            }));
+            builder.CloseComponent();
+        }
+        else
+        {
+            builder.OpenComponent<MudNavLink>(5);
+            builder.AddAttribute(6, "Href", item.Route);
+            builder.AddAttribute(7, "Icon", item.Icon);
+            builder.AddAttribute(8, "ChildContent", (RenderFragment)(textBuilder =>
+            {
+                textBuilder.AddContent(9, item.Label);
+            }));
+            builder.CloseComponent();
+        }
+    };
+
+    void Logout()
+    {
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}

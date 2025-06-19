@@ -1,0 +1,71 @@
+﻿@page "/bookings/mybookings"
+@using MudBlazor
+
+<SharedPageSection Title="My Bookings" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-4">
+        <MudTextField @bind-Value="Search"
+                      Label="Search bookings..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Class="mb-4" />
+
+        <MudTable Items="FilteredBookings" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Booking #</MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Destination</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Booking #">@context.BookingNumber</MudTd>
+                <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd DataLabel="Destination">@context.Destination</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip T="string" Color="@(context.Status == "Confirmed" ? Color.Success : Color.Info)" Text="@context.Status" />
+                </MudTd>
+                <MudTd DataLabel="Amount">@context.Amount.ToString("N2")</MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" Title="View Details" />
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Class="pa-6" Typo="Typo.body1" Color="Color.Secondary">
+                    No bookings found matching your search.
+                </MudText>
+            </NoRecordsContent>
+        </MudTable>
+    </MudContainer>
+</SharedPageSection>
+
+@code {
+    public string Search { get; set; } = "";
+
+    public class Booking
+    {
+        public string BookingNumber { get; set; }
+        public DateTime Date { get; set; }
+        public string Destination { get; set; }
+        public string Status { get; set; }
+        public double Amount { get; set; }
+    }
+
+    List<Booking> Bookings = new()
+    {
+        new Booking { BookingNumber = "B001", Date = DateTime.Today.AddDays(-2), Destination = "Cape Town", Status = "Confirmed", Amount = 1299.00 },
+        new Booking { BookingNumber = "B002", Date = DateTime.Today.AddDays(4), Destination = "Kruger Park", Status = "Upcoming", Amount = 2399.99 },
+        new Booking { BookingNumber = "B003", Date = DateTime.Today.AddDays(-10), Destination = "Durban", Status = "Completed", Amount = 1499.50 }
+    };
+
+    IEnumerable<Booking> FilteredBookings =>
+        string.IsNullOrWhiteSpace(Search)
+            ? Bookings
+            : Bookings.Where(b =>
+                (b.BookingNumber?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (b.Destination?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (b.Status?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || b.Amount.ToString("N2").Contains(Search)
+            );
+}

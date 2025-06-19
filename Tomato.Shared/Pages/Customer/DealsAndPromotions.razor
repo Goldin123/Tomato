@@ -1,0 +1,125 @@
+﻿@page "/deals"
+@using MudBlazor
+@inject IDialogService DialogService
+
+<SharedPageSection Title="Latest Deals & Promotions" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-4 transparent-bg">
+
+        <!-- Search/filter bar -->
+        <MudTextField @bind-Value="Search"
+                      Label="Search deals..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      AdornmentColor="Color.Secondary"
+                      Class="mb-4" />
+
+        <!-- Deals Grid -->
+        <MudGrid Gutter="16px">
+            @foreach (var deal in FilteredDeals)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Elevation="0" Class="p-3 mb-2" Style="border-radius: 12px; background: transparent;">
+                        <MudStack Spacing="1">
+                            @if (!string.IsNullOrWhiteSpace(deal.ImageUrl))
+                            {
+                                <MudAvatar Size="Size.Large" Image="@deal.ImageUrl" Class="mb-2" />
+                            }
+                            else if (!string.IsNullOrWhiteSpace(deal.Icon))
+                            {
+                                <MudIcon Icon="@deal.Icon" Size="Size.Large" Color="Color.Primary" Class="mb-2" />
+                            }
+                            <MudText Typo="Typo.subtitle1" Class="font-bold">@deal.Title</MudText>
+                            <MudText Typo="Typo.body2">@deal.Description</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Info">@deal.Validity</MudText>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="mt-2"
+                                       Style="width:fit-content;"
+                                       OnClick="@(() => ShowDealDetailsAsync(deal))">
+                                View Deal
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+        @if (!FilteredDeals.Any())
+        {
+            <MudText Class="pa-6" Typo="Typo.body1" Color="Color.Secondary">
+                No deals found matching your search.
+            </MudText>
+        }
+    </MudContainer>
+</SharedPageSection>
+
+@code {
+    public string Search { get; set; } = "";
+
+    public class DealPromo
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Validity { get; set; }
+        public string ImageUrl { get; set; }
+        public string Icon { get; set; }
+    }
+
+    List<DealPromo> Deals = new()
+    {
+        new DealPromo {
+            Title = "20% Off Beach Resorts",
+            Description = "Enjoy 20% off selected beach destinations for early summer bookings.",
+            Validity = "Valid until 2025/07/15",
+            ImageUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=100&q=80"
+        },
+        new DealPromo {
+            Title = "Free Breakfast Included",
+            Description = "Book a city hotel and get complimentary breakfast for two.",
+            Validity = "Valid for stays in July 2025",
+            Icon = Icons.Material.Filled.FreeBreakfast
+        },
+        new DealPromo {
+            Title = "Family Package Special",
+            Description = "Kids stay free at participating safari lodges.",
+            Validity = "Valid all winter",
+            Icon = Icons.Material.Filled.Groups
+        },
+        new DealPromo {
+            Title = "Weekend Getaway Savings",
+            Description = "Save 15% on weekend trips booked before August.",
+            Validity = "Valid until 2025/08/01",
+            ImageUrl = "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=100&q=80"
+        },
+        new DealPromo {
+            Title = "Couples Retreat Deal",
+            Description = "Special rates for couples on luxury escapes.",
+            Validity = "Limited time offer",
+            Icon = Icons.Material.Filled.Favorite
+        }
+    };
+
+    IEnumerable<DealPromo> FilteredDeals =>
+        string.IsNullOrWhiteSpace(Search)
+            ? Deals
+            : Deals.Where(d =>
+                (d.Title?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (d.Description?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (d.Validity?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+            );
+
+    private async Task ShowDealDetailsAsync(DealPromo deal)
+    {
+        var parameters = new DialogParameters
+        {
+            { "Name", deal.Title }, // Using "Name" for dialog parameter
+            { "Description", deal.Description },
+            { "Region", deal.Validity },        // You can show validity as region, or rename in the dialog
+            { "ImageUrl", deal.ImageUrl },
+            { "Icon", deal.Icon }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small };
+        await DialogService.ShowAsync<DestinationDetailsDialog>("Deal Details", parameters, options);
+    }
+}

@@ -1,3 +1,4 @@
+using MudBlazor.Services;
 using Tomato.Shared.Services;
 using Tomato.Web.Components;
 using Tomato.Web.Services;
@@ -16,6 +17,8 @@ namespace Tomato
 
             // Add device-specific services used by the Tomato.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
+
+            builder.Services.AddMudServices();
 
             var app = builder.Build();
 

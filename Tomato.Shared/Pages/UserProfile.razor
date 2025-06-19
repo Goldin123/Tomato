@@ -1,0 +1,28 @@
+﻿@page "/profile"
+
+<SharedPageSection Title="My Profile" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Small" Class="py-6">
+        <MudPaper Class="p-4">
+            <MudAvatar Size="Size.Large" Color="Color.Secondary" Class="mx-auto mb-4">
+                GB
+            </MudAvatar>
+            <MudText Typo="Typo.h6" Align="Align.Center">Goldin Baloyi</MudText>
+            <MudText Typo="Typo.body2" Align="Align.Center">goldin@example.com</MudText>
+
+            <MudDivider Class="my-4" />
+
+            <MudButton Variant="Variant.Outlined" FullWidth="true" Class="mb-2" StartIcon="@Icons.Material.Filled.Edit">
+                Edit Profile
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" FullWidth="true" Class="mb-2" StartIcon="@Icons.Material.Filled.Lock">
+                Change Password
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" FullWidth="true" Class="mb-2" StartIcon="@Icons.Material.Filled.Home">
+                My Addresses
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" FullWidth="true" Color="Color.Error" StartIcon="@Icons.Material.Filled.Logout">
+                Logout
+            </MudButton>
+        </MudPaper>
+    </MudContainer>
+</SharedPageSection>

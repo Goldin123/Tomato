@@ -1,0 +1,46 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="MyCustomTheme" @ref="_mudThemeProvider" @bind-IsDarkMode="_isDarkMode" />
+<MudSnackbarProvider />
+<MudDialogProvider />
+<MudPopoverProvider />
+
+<div class="login-bg-debug">
+    <MudPaper Elevation="3" Class="p-6 rounded login-card-debug">
+        @Body
+    </MudPaper>
+    <div class="login-bottom-spacer-debug"></div>
+</div>
+
+
+@code {
+    private bool _isDarkMode = false;
+    private MudThemeProvider _mudThemeProvider;
+
+    private string BackgroundColor => _isDarkMode ? "#1e1e2f" : "#f4f4f4";
+
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#bc4b51ff",
+            Secondary = "#8cb369ff",
+            AppbarBackground = "#F4631E",
+            Background = "#f4f4f4"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#bc4b51ff",
+            Secondary = "#8cb369ff",
+            AppbarBackground = "#F4631E",
+            Background = "#1e1e2f"
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "260px",
+            DrawerWidthRight = "300px"
+        }
+    };
+
+    private void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
+}
