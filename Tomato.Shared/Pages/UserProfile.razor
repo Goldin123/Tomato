@@ -1,28 +1,65 @@
 ﻿@page "/profile"
 
-<SharedPageSection Title="My Profile" ShowFooter="false">
-    <MudContainer MaxWidth="MaxWidth.Small" Class="py-6">
-        <MudPaper Class="p-4">
-            <MudAvatar Size="Size.Large" Color="Color.Secondary" Class="mx-auto mb-4">
-                GB
-            </MudAvatar>
-            <MudText Typo="Typo.h6" Align="Align.Center">Goldin Baloyi</MudText>
-            <MudText Typo="Typo.body2" Align="Align.Center">goldin@example.com</MudText>
+<SharedPageSection Title="Personal Details" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Small" Class="py-2">
+        <MudPaper Class="p-0" Style="border-radius:0;">
+            <!-- Name -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Your Name</MudText>
+                    <MudText Typo="Typo.caption">Jabu Baloyi</MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Edit</MudLink>
+            </div>
+            <MudDivider />
 
-            <MudDivider Class="my-4" />
+            <!-- Email -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Email Address</MudText>
+                    <MudText Typo="Typo.caption">
+                        baloyi.jabu@gmail.com
+                        <MudIcon Icon="@Icons.Material.Filled.Verified" Color="Color.Success" Size="Size.Small" Class="ml-1" />
+                    </MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Edit & Verify</MudLink>
+            </div>
+            <MudDivider />
 
-            <MudButton Variant="Variant.Outlined" FullWidth="true" Class="mb-2" StartIcon="@Icons.Material.Filled.Edit">
-                Edit Profile
-            </MudButton>
-            <MudButton Variant="Variant.Outlined" FullWidth="true" Class="mb-2" StartIcon="@Icons.Material.Filled.Lock">
-                Change Password
-            </MudButton>
-            <MudButton Variant="Variant.Outlined" FullWidth="true" Class="mb-2" StartIcon="@Icons.Material.Filled.Home">
-                My Addresses
-            </MudButton>
-            <MudButton Variant="Variant.Outlined" FullWidth="true" Color="Color.Error" StartIcon="@Icons.Material.Filled.Logout">
-                Logout
-            </MudButton>
+            <!-- Mobile -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Mobile Number</MudText>
+                    <MudText Typo="Typo.caption">
+                        +27 79 868 2406
+                        <MudIcon Icon="@Icons.Material.Filled.Verified" Color="Color.Success" Size="Size.Small" Class="ml-1" />
+                    </MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Edit & Verify</MudLink>
+            </div>
+            <MudDivider />
+
+            <!-- Password -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Password</MudText>
+                    <MudText Typo="Typo.caption">********</MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Edit</MudLink>
+            </div>
+            <MudDivider />
+
+            <!-- Business Details -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Business Details</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        Why add business details?
+                    </MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Add</MudLink>
+            </div>
         </MudPaper>
     </MudContainer>
 </SharedPageSection>
+
