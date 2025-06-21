@@ -358,3 +358,7 @@ a.nav-link:hover {
     background: transparent !important;
     box-shadow: none !important;
 }
+
+.mud-drawer-open .mud-overlay {
+    background-color: rgba(0,0,0,0.2) !important;
+}
