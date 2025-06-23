@@ -323,23 +323,28 @@ a.nav-link:hover {
     white-space: nowrap;
 }
 
-.drawer-zindex-fix {
-    z-index: 1301 !important;
-    position: relative !important;
-    background: inherit;
-}
 .mud-appbar {
     z-index: 1300 !important;
     /* Remove position: fixed and others */
 }
 
-.mud-drawer {
-    z-index: 1200 !important;
+.drawer-zindex-fix {
+    /* No forced position or z-index when closed */
 }
+
+    .drawer-zindex-fix.mud-drawer-open {
+        z-index: 1400 !important;
+        position: fixed !important;
+        background: inherit;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+    }
 
 .main-content-scroll, .mud-main-content {
     margin-top: 10px !important; /* Height of the AppBar */
 }
+
 .tourism-card {
     border-radius: 12px;
     min-height: 120px;
@@ -352,13 +357,10 @@ a.nav-link:hover {
     color: var(--secondary-brand-color) !important;
     font-weight: 600;
 }
+
 .transparent-bg,
 .transparent-bg .mud-container,
 .transparent-bg .mud-grid {
     background: transparent !important;
     box-shadow: none !important;
-}
-
-.mud-drawer-open .mud-overlay {
-    background-color: rgba(0,0,0,0.2) !important;
 }
