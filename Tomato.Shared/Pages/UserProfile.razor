@@ -1,0 +1,65 @@
+﻿@page "/profile"
+
+<SharedPageSection Title="Personal Details" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Small" Class="py-2">
+        <MudPaper Class="p-0" Style="border-radius:0;">
+            <!-- Name -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Your Name</MudText>
+                    <MudText Typo="Typo.caption">Jabu Baloyi</MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Edit</MudLink>
+            </div>
+            <MudDivider />
+
+            <!-- Email -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Email Address</MudText>
+                    <MudText Typo="Typo.caption">
+                        baloyi.jabu@gmail.com
+                        <MudIcon Icon="@Icons.Material.Filled.Verified" Color="Color.Success" Size="Size.Small" Class="ml-1" />
+                    </MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Edit & Verify</MudLink>
+            </div>
+            <MudDivider />
+
+            <!-- Mobile -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Mobile Number</MudText>
+                    <MudText Typo="Typo.caption">
+                        +27 79 868 2406
+                        <MudIcon Icon="@Icons.Material.Filled.Verified" Color="Color.Success" Size="Size.Small" Class="ml-1" />
+                    </MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Edit & Verify</MudLink>
+            </div>
+            <MudDivider />
+
+            <!-- Password -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Password</MudText>
+                    <MudText Typo="Typo.caption">********</MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Edit</MudLink>
+            </div>
+            <MudDivider />
+
+            <!-- Business Details -->
+            <div class="row-item">
+                <div>
+                    <MudText Typo="Typo.body2" Style="font-weight:600;">Business Details</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        Why add business details?
+                    </MudText>
+                </div>
+                <MudLink Href="#" Class="row-link">Add</MudLink>
+            </div>
+        </MudPaper>
+    </MudContainer>
+</SharedPageSection>
+

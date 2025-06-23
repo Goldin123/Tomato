@@ -1,0 +1,70 @@
+﻿@page "/bookings/refunds"
+@using MudBlazor
+
+<SharedPageSection Title="Refunds" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-4">
+        <MudTextField @bind-Value="Search"
+                      Label="Search refunds..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Class="mb-4" />
+
+        <MudTable Items="FilteredRefunds" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Refund #</MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Booking #</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Refund #">@context.RefundNumber</MudTd>
+                <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd DataLabel="Booking #">@context.BookingNumber</MudTd>
+                <MudTd DataLabel="Amount">@context.Amount.ToString("N2")</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip T="string" Color="@(context.Status == "Paid" ? Color.Success : Color.Warning)" Text="@context.Status" />
+                </MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" Title="View Details" />
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Class="pa-6" Typo="Typo.body1" Color="Color.Secondary">
+                    No refunds found matching your search.
+                </MudText>
+            </NoRecordsContent>
+        </MudTable>
+    </MudContainer>
+</SharedPageSection>
+
+@code {
+    public string Search { get; set; } = "";
+
+    public class Refund
+    {
+        public string RefundNumber { get; set; }
+        public DateTime Date { get; set; }
+        public string BookingNumber { get; set; }
+        public double Amount { get; set; }
+        public string Status { get; set; }
+    }
+
+    List<Refund> Refunds = new()
+    {
+        new Refund { RefundNumber = "R001", Date = DateTime.Today.AddDays(-5), BookingNumber = "B004", Amount = 1499.50, Status = "Paid" },
+        new Refund { RefundNumber = "R002", Date = DateTime.Today.AddDays(-10), BookingNumber = "B002", Amount = 2399.99, Status = "Pending" }
+    };
+
+    IEnumerable<Refund> FilteredRefunds =>
+        string.IsNullOrWhiteSpace(Search)
+            ? Refunds
+            : Refunds.Where(r =>
+                (r.RefundNumber?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (r.BookingNumber?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (r.Status?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || r.Amount.ToString("N2").Contains(Search)
+            );
+}

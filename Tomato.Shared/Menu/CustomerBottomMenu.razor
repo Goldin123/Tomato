@@ -1,0 +1,86 @@
+﻿@using MudBlazor
+@inject NavigationManager NavigationManager
+
+<MudPaper Class="bottom-nav-paper" Elevation="6" Color="Color.Surface">
+    <MudGrid Class="bottom-nav-grid" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Wrap="false">
+        @foreach (var item in BottomNavItems)
+        {
+            var isActive = ActiveTab == item.Route;
+            <MudItem Class="bottom-nav-item">
+                <MudButton Class="d-block text-center"
+                           Color="Color.Inherit"
+                           DisableElevation="true"
+                           OnClick="@(() => NavigateTo(item.Route))">
+                    <MudStack Direction="Column" AlignItems="AlignItems.Center" Spacing="0">
+                        <MudIcon Icon="@item.Icon"
+                                 Color="@(isActive ? Color.Primary : Color.Default)" />
+                        <MudText Typo="Typo.caption"
+                                 Align="Align.Center"
+                                 Color="@(isActive ? Color.Primary : Color.Default)"
+                                 Style="white-space: nowrap;">
+                            @item.Label
+                        </MudText>
+                    </MudStack>
+                </MudButton>
+            </MudItem>
+        }
+    </MudGrid>
+</MudPaper>
+
+@code {
+    private string ActiveTab;
+    private IDisposable locationChangedHandler;
+
+    private class BottomNavItem
+    {
+        public string Route { get; set; }
+        public string Icon { get; set; }
+        public string Label { get; set; }
+        public string BadgeContent { get; set; }
+    }
+
+    private List<BottomNavItem> BottomNavItems = new()
+    {
+        new() { Route = "/Home",        Icon = Icons.Material.Filled.Search,           Label = "Search" },
+        new() { Route = "/destination",  Icon = Icons.Material.Filled.Map,         Label = "Destinations" },
+        new() { Route = "/bookings/mybookings",        Icon = Icons.Material.Filled.Airlines,   Label = "Bookings" },
+        new() { Route = "/inbox",       Icon = Icons.Material.Filled.Mail, Label = "Inbox" },
+        new() { Route = "/profile",     Icon = Icons.Material.Filled.Person,         Label = "Account" }
+    };
+
+    protected override void OnInitialized()
+    {
+        SetActiveTab(NavigationManager.Uri);
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        SetActiveTab(e.Location);
+        StateHasChanged();
+    }
+
+    private void SetActiveTab(string uri)
+    {
+        var relativePath = "/" + NavigationManager.ToBaseRelativePath(uri).TrimEnd('/');
+        ActiveTab = BottomNavItems
+            .Select(i => i.Route)
+            .FirstOrDefault(r => relativePath.StartsWith(r, StringComparison.OrdinalIgnoreCase))
+            ?? BottomNavItems[0].Route;
+    }
+
+    void NavigateTo(string route)
+    {
+        //if (ActiveTab != route)
+        //{
+        NavigationManager.NavigateTo(route);
+        // ActiveTab will be updated on LocationChanged event
+        //}
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+}
+

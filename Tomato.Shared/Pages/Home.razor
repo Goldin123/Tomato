@@ -1,14 +1,81 @@
-﻿@page "/"
-@using Tomato.Shared.Services
+﻿@page "/home"
+@using MudBlazor
 @inject IFormFactor FormFactor
 
-<PageTitle>Home</PageTitle>
+<MudContainer MaxWidth="MaxWidth.False" Class="p-0">
 
-<h1>Hello, world!</h1>
+    <!-- Date Range Section (ultra compact, transparent, secondary color) -->
+@*     <MudPaper Elevation="0" Class="mx-auto my-2 p-1 mx-3" Style="border-radius: 16px; background: transparent;">
+        <MudStack AlignItems="AlignItems.Center" Spacing="1">
+            <MudText Typo="Typo.h6" Class="mb-0" Color="Color.Secondary">
+                When are you travelling?
+            </MudText>
+            <MudDateRangePicker @bind-DateRange="_dateRange"
+                                Color="Color.Secondary"
+                                PickerVariant="PickerVariant.Dialog"
+                                Margin="Margin.Dense"
+                                Label="Check-in and Check-out"  Class="date-secondary"/>
+        </MudStack>
+    </MudPaper> *@
 
-Welcome to your new app running on <em>@factor</em> using <em>@platform</em>.
+    <!-- Date Range Section -->
+    <MudPaper Elevation="5" Class="mx-auto my-5 p-4" Style="max-width: 540px; border-radius: 16px;">
+        <MudStack AlignItems="AlignItems.Center" Spacing="2">
+            <MudText Typo="Typo.h5" Class="mb-1">When are you travelling?</MudText>
+            <MudDateRangePicker @bind-DateRange="_dateRange"
+                                PickerVariant="PickerVariant.Dialog"
+                                Margin="Margin.Dense"
+                                StartText="Check-in"
+                                EndText="Check-out"
+                                Style="min-width:220px;" />
+        </MudStack>
+    </MudPaper>
 
+    <!-- Responsive Card Grid -->
+    <MudGrid Gutter="16px" Class="mx-auto" Style="width:100%; box-sizing:border-box;">
+        <MudItem xs="12" sm="4">
+            <MudPaper Elevation="2" Class="p-3 tourism-card">
+                <MudText Typo="Typo.subtitle1">Explore Destinations</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1">Discover cities, beaches, and unique places.</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudPaper Elevation="2" Class="p-3 tourism-card">
+                <MudText Typo="Typo.subtitle1">Book Your Stay</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1">Hotels, guesthouses, and special deals.</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudPaper Elevation="2" Class="p-3 tourism-card">
+                <MudText Typo="Typo.subtitle1">Activities & Tours</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1">Adventures, tours, and must-do experiences.</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="p-3 tourism-card">
+                <MudText Typo="Typo.subtitle1">Travel Tips</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1">Get inspired and travel smarter.</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="p-3 tourism-card">
+                <MudText Typo="Typo.subtitle1">Special Offers</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1">Save on flights and accommodation.</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+</MudContainer>
 @code {
+    private PickerVariant _variant = PickerVariant.Static;
+    private DateRange _dateRange { get; set; } = new DateRange(DateTime.Today, DateTime.Today.AddDays(3));
+
     private string factor => FormFactor.GetFormFactor();
     private string platform => FormFactor.GetPlatform();
+
+    private void OnValueChanged(PickerVariant variant)
+    {
+        _dateRange = null;
+        _variant = variant;
+    }
 }

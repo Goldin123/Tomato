@@ -1,0 +1,124 @@
+﻿@page "/guides"
+@using MudBlazor
+@inject IDialogService DialogService
+
+<SharedPageSection Title="Guides" ShowFooter="false">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-4 transparent-bg">
+        <!-- Search/filter bar -->
+        <MudTextField @bind-Value="Search"
+                      Label="Search guides..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      AdornmentColor="Color.Secondary"
+                      Class="mb-4" />
+
+        <!-- Guides Grid -->
+        <MudGrid Gutter="16px">
+            @foreach (var guide in FilteredGuides)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Elevation="0" Class="p-3 mb-2" Style="border-radius: 12px; background: transparent;">
+                        <MudStack Spacing="1">
+                            @if (!string.IsNullOrWhiteSpace(guide.ImageUrl))
+                            {
+                                <MudAvatar Size="Size.Large" Image="@guide.ImageUrl" Class="mb-2" />
+                            }
+                            else if (!string.IsNullOrWhiteSpace(guide.Icon))
+                            {
+                                <MudIcon Icon="@guide.Icon" Size="Size.Large" Color="Color.Primary" Class="mb-2" />
+                            }
+                            <MudText Typo="Typo.subtitle1" Class="font-bold">@guide.Title</MudText>
+                            <MudText Typo="Typo.body2">@guide.Summary</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Info">@guide.Category</MudText>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="mt-2"
+                                       Style="width:fit-content;"
+                                       OnClick="@(() => ShowGuideDetailsAsync(guide))">
+                                View Guide
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+        @if (!FilteredGuides.Any())
+        {
+            <MudText Class="pa-6" Typo="Typo.body1" Color="Color.Secondary">
+                No guides found matching your search.
+            </MudText>
+        }
+    </MudContainer>
+</SharedPageSection>
+
+@code {
+    public string Search { get; set; } = "";
+
+    public class Guide
+    {
+        public string Title { get; set; }
+        public string Summary { get; set; }
+        public string Category { get; set; }
+        public string ImageUrl { get; set; }
+        public string Icon { get; set; }
+    }
+
+    List<Guide> Guides = new()
+    {
+        new Guide {
+            Title = "Cape Town Essentials",
+            Summary = "Everything you need to know for your first trip to Cape Town.",
+            Category = "City Guide",
+            ImageUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=100&q=80"
+        },
+        new Guide {
+            Title = "Safari Planning Tips",
+            Summary = "Get the most out of your safari adventure in South Africa.",
+            Category = "Adventure",
+            Icon = Icons.Material.Filled.Pets
+        },
+        new Guide {
+            Title = "Best Beaches",
+            Summary = "Discover the most beautiful beaches along the South African coast.",
+            Category = "Leisure",
+            ImageUrl = "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=100&q=80"
+        },
+        new Guide {
+            Title = "Wine Route Highlights",
+            Summary = "Explore Stellenbosch and the Cape Winelands like a local.",
+            Category = "Food & Wine",
+            Icon = Icons.Material.Filled.WineBar
+        },
+        new Guide {
+            Title = "Family Travel Advice",
+            Summary = "Top tips for travelling South Africa with kids.",
+            Category = "Family",
+            Icon = Icons.Material.Filled.FamilyRestroom
+        }
+    };
+
+    IEnumerable<Guide> FilteredGuides =>
+        string.IsNullOrWhiteSpace(Search)
+            ? Guides
+            : Guides.Where(g =>
+                (g.Title?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (g.Summary?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (g.Category?.Contains(Search, StringComparison.OrdinalIgnoreCase) ?? false)
+            );
+
+    private async Task ShowGuideDetailsAsync(Guide guide)
+    {
+        var parameters = new DialogParameters
+        {
+            { "Name", guide.Title },
+            { "Description", guide.Summary },
+            { "Region", guide.Category },
+            { "ImageUrl", guide.ImageUrl },
+            { "Icon", guide.Icon }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small };
+        await DialogService.ShowAsync<DestinationDetailsDialog>("Guide Details", parameters, options);
+    }
+}

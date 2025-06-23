@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MudBlazor.Services;
 using Tomato.Services;
 using Tomato.Shared.Services;
 
@@ -20,7 +21,7 @@ namespace Tomato
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
             builder.Services.AddMauiBlazorWebView();
-
+            builder.Services.AddMudServices();
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
